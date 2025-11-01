@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Assistant - Generate AI-Powered Interview Questions{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="gradient-bg">
+    <div class="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
+                AI-Powered Interview
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-400">
+                    Question Generator
+                </span>
+            </h1>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto animate-slide-up">
+                Upload a resume, describe the job, and get customized interview questions powered by Google Gemini AI.
+                Perfect for recruiters, hiring managers, and interview preparation.
+            </p>
+            <div class="animate-bounce-gentle">
+                <a href="#generator" class="inline-flex items-center bg-white text-primary-600 px-8 py-4 rounded-full font-semibold hover:shadow-glow transition-all duration-300 transform hover:scale-105">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Start Generating Questions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Choose Our Interview Assistant?</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Streamline your hiring process with AI-generated questions tailored to each candidate</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center p-8 bg-gradient-to-b from-blue-50 to-white rounded-xl shadow-sm hover:shadow-glow transition-all duration-300">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Smart Resume Analysis</h3>
+                <p class="text-gray-600">Upload PDF resumes and get intelligent parsing of skills, experience, and qualifications</p>
+            </div>
+            
+            <div class="text-center p-8 bg-gradient-to-b from-green-50 to-white rounded-xl shadow-sm hover:shadow-glow transition-all duration-300">
+                <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">AI-Powered Generation</h3>
+                <p class="text-gray-600">Leverage Google Gemini's advanced AI to create relevant, thoughtful interview questions</p>
+            </div>
+            
+            <div class="text-center p-8 bg-gradient-to-b from-purple-50 to-white rounded-xl shadow-sm hover:shadow-glow transition-all duration-300">
+                <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Customizable Options</h3>
+                <p class="text-gray-600">Choose interview type, difficulty level, and focus areas to match your specific needs</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Question Generator Section -->
+<div id="generator" class="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Generate Interview Questions</h2>
+            <p class="text-gray-600">Fill out the form below to create customized interview questions</p>
+        </div>
+
+        <form id="questionForm" class="bg-white rounded-2xl shadow-xl p-8 space-y-8" enctype="multipart/form-data">
+            <!-- Resume Upload Section -->
+            <div class="space-y-4">
+                <label class="block text-lg font-semibold text-gray-900">
+                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Upload Resume (PDF)
+                </label>
+                <div class="file-upload-area border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-400 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <input type="file" id="resume" name="resume" accept=".pdf" required class="hidden">
+                    <div id="upload-content">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <p class="text-gray-600 font-medium">Click to upload or drag and drop</p>
+                        <p class="text-gray-400 text-sm mt-2">PDF files only</p>
+                    </div>
+                    <div id="file-selected" class="hidden">
+                        <svg class="w-12 h-12 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-green-600 font-medium" id="file-name"></p>
+                        <button type="button" id="change-file" class="text-primary-600 text-sm mt-2 hover:underline">Change file</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Description -->
+            <div class="space-y-4">
+                <label for="job_description" class="block text-lg font-semibold text-gray-900">
+                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
+                    </svg>
+                    Job Description
+                </label>
+                <textarea
+                    id="job_description"
+                    name="job_description"
+                    required
+                    rows="6"
+                    data-auto-resize
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                    placeholder="Paste the complete job description here. Include requirements, responsibilities, and any specific skills needed..."></textarea>
+            </div>
+
+            <!-- Interview Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Round Type -->
+                <div class="space-y-4">
+                    <label for="round_type" class="block text-lg font-semibold text-gray-900">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        Interview Type
+                    </label>
+                    <select id="round_type" name="round_type" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                        <option value="technical">Technical Interview</option>
+                        <option value="behavioral" selected>Behavioral Interview</option>
+                        <option value="system_design">System Design</option>
+                        <option value="coding">Coding Interview</option>
+                        <option value="domain_specific">Domain Specific</option>
+                    </select>
+                </div>
+
+                <!-- Difficulty Level -->
+                <div class="space-y-4">
+                    <label for="difficulty" class="block text-lg font-semibold text-gray-900">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        Difficulty Level
+                    </label>
+                    <select id="difficulty" name="difficulty" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Additional Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Number of Questions -->
+                <div class="space-y-4">
+                    <label for="num_questions" class="block text-lg font-semibold text-gray-900">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                        </svg>
+                        Number of Questions
+                    </label>
+                    <input
+                        type="number"
+                        id="num_questions"
+                        name="num_questions"
+                        min="1"
+                        max="50"
+                        value="10"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+
+                <!-- Focus Areas -->
+                <div class="space-y-4">
+                    <label for="focus_areas" class="block text-lg font-semibold text-gray-900">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        Focus Areas <span class="text-sm font-normal text-gray-500">(Optional)</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="focus_areas"
+                        name="focus_areas"
+                        placeholder="e.g., Python, Machine Learning, Leadership (comma-separated)"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-6">
+                <button
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-primary-600 to-purple-600 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:from-primary-700 hover:to-purple-700 focus:ring-4 focus:ring-primary-200 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                    <svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Generate Interview Questions
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Section -->
+<div id="results-section" class="py-20 bg-white hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Generated Interview Questions</h2>
+            <p class="text-gray-600">Review and customize your interview questions below</p>
+        </div>
+
+        <div id="questions-container">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <div class="text-center mt-12">
+            <button
+                id="export-questions"
+                class="bg-green-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all duration-300 mr-4">
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Export as PDF
+            </button>
+            <button
+                id="generate-more"
+                class="bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 transition-all duration-300">
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Generate More
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('questionForm');
+    const fileInput = document.getElementById('resume');
+    const uploadArea = document.querySelector('.file-upload-area');
+    const uploadContent = document.getElementById('upload-content');
+    const fileSelected = document.getElementById('file-selected');
+    const fileName = document.getElementById('file-name');
+    const changeFileBtn = document.getElementById('change-file');
+    const resultsSection = document.getElementById('results-section');
+    const questionsContainer = document.getElementById('questions-container');
+
+    // File upload handling
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('border-primary-400', 'bg-primary-50');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('border-primary-400', 'bg-primary-50');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('border-primary-400', 'bg-primary-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            handleFileSelect();
+        } else {
+            showToast('Please select a PDF file', 'error');
+        }
+    });
+
+    fileInput.addEventListener('change', handleFileSelect);
+    changeFileBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    function handleFileSelect() {
+        const file = fileInput.files[0];
+        if (file) {
+            uploadContent.classList.add('hidden');
+            fileSelected.classList.remove('hidden');
+            fileName.textContent = file.name;
+        }
+    }
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm(form)) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        showLoading();
+        
+        try {
+            const formData = new FormData(form);
+            
+            const response = await fetch('/api/v1/generate-questions', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to generate questions');
+            }
+
+            const result = await response.json();
+            displayQuestions(result);
+            showToast('Questions generated successfully!', 'success');
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+            
+        } catch (error) {
+            console.error('Generation error:', error);
+            showToast(error.message || 'Failed to generate questions', 'error');
+        } finally {
+            hideLoading();
+        }
+    });
+
+    function displayQuestions(data) {
+        resultsSection.classList.remove('hidden');
+        questionsContainer.innerHTML = '';
+
+        data.questions.forEach((question, index) => {
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card bg-white rounded-xl shadow-lg p-6 mb-6 border-l-4 border-primary-500';
+            
+            questionCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <span class="bg-primary-100 text-primary-800 text-sm font-semibold px-3 py-1 rounded-full mr-3">
+                            Question ${index + 1}
+                        </span>
+                        <span class="bg-gray-100 text-gray-800 text-sm font-semibold px-3 py-1 rounded-full">
+                            ${question.category}
+                        </span>
+                    </div>
+                    <span class="text-sm text-gray-500 capitalize">${question.difficulty}</span>
+                </div>
+                
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 leading-relaxed">
+                    ${question.question}
+                </h3>
+                
+                ${question.context ? `
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <p class="text-sm text-blue-800"><strong>Context:</strong> ${question.context}</p>
+                    </div>
+                ` : ''}
+                
+                ${question.follow_up_questions && question.follow_up_questions.length > 0 ? `
+                    <div class="mt-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Follow-up Questions:</h4>
+                        <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                            ${question.follow_up_questions.map(q => `<li>${q}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+                
+                ${question.expected_topics && question.expected_topics.length > 0 ? `
+                    <div class="mt-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Expected Topics:</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${question.expected_topics.map(topic => 
+                                `<span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">${topic}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            
+            questionsContainer.appendChild(questionCard);
+        });
+
+        // Add summary card
+        const summaryCard = document.createElement('div');
+        summaryCard.className = 'bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl p-6 mb-6';
+        summaryCard.innerHTML = `
+            <h3 class="text-xl font-bold mb-4">Generation Summary</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="text-2xl font-bold">${data.total_questions}</div>
+                    <div class="text-sm opacity-90">Questions</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold capitalize">${data.round_type.replace('_', ' ')}</div>
+                    <div class="text-sm opacity-90">Interview Type</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold capitalize">${data.difficulty}</div>
+                    <div class="text-sm opacity-90">Difficulty</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold">${data.metadata?.model || 'Gemini'}</div>
+                    <div class="text-sm opacity-90">AI Model</div>
+                </div>
+            </div>
+        `;
+        
+        questionsContainer.insertBefore(summaryCard, questionsContainer.firstChild);
+    }
+
+    // Export functionality
+    document.getElementById('export-questions').addEventListener('click', () => {
+        showToast('Export functionality coming soon!', 'info');
+    });
+
+    document.getElementById('generate-more').addEventListener('click', () => {
+        form.scrollIntoView({ behavior: 'smooth' });
+    });
+});
+</script>
+{% endblock %}

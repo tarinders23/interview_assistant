@@ -1,0 +1,25 @@
+# Core AI dependencies - Google Gemini
+google-genai==1.47.0
+
+# PDF Processing
+pdfplumber>=0.11.0
+pypdf>=4.0.0
+
+# Web Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+
+# Template Engine and Static Files
+jinja2>=3.1.0
+aiofiles>=23.0.0
+
+# Data Validation
+pydantic>=2.9.0
+pydantic-settings>=2.5.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# Utilities
+typing-extensions>=4.12.0
