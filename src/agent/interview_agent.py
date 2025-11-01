@@ -49,7 +49,7 @@ class InterviewQuestionAgent:
             os.environ['GEMINI_API_KEY'] = settings.gemini_api_key
         
         # Initialize the Gemini client
-        self.client = genai.Client(api_key="AIzaSyAnaXd9CYQ0HpzEy7XHOkxbdLNHV-E-OBA")
+        self.client = genai.Client(api_key=settings.gemini_api_key)
 
         logger.info(f"Initialized InterviewQuestionAgent with model: {self.model_name}")
     
