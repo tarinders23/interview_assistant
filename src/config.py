@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
     # Google Gemini Configuration
-    gemini_api_key: str
+    gemini_api_key: Optional[str] = None  # Optional since we'll get it from the request
     model_name: str = "gemini-2.5-flash"
     temperature: float = 0.7
     max_tokens: int = 2000

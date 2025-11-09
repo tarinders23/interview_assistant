@@ -28,6 +28,7 @@ class InterviewQuestionAgent:
     
     def __init__(
         self,
+        api_key: Optional[str] = None,
         model_name: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
@@ -36,6 +37,7 @@ class InterviewQuestionAgent:
         Initialize the interview question agent.
         
         Args:
+            api_key: Gemini API key (defaults to environment variable)
             model_name: Gemini model to use (defaults to config)
             temperature: Temperature for generation (defaults to config)
             max_tokens: Max tokens to generate (defaults to config)
@@ -44,12 +46,11 @@ class InterviewQuestionAgent:
         self.temperature = temperature or settings.temperature
         self.max_tokens = max_tokens or settings.max_tokens
         
-        # Set API key as environment variable if not already set
-        if not os.getenv('GEMINI_API_KEY'):
-            os.environ['GEMINI_API_KEY'] = settings.gemini_api_key
+        # Use provided API key or fall back to environment
+        api_key = api_key or os.getenv('GEMINI_API_KEY') or settings.gemini_api_key
         
         # Initialize the Gemini client
-        self.client = genai.Client(api_key=settings.gemini_api_key)
+        self.client = genai.Client(api_key=api_key)
 
         logger.info(f"Initialized InterviewQuestionAgent with model: {self.model_name}")
     

@@ -54,7 +54,6 @@ app.add_middleware(
 
 # Initialize services
 resume_parser = ResumeParser()
-question_agent = InterviewQuestionAgent()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -93,7 +92,8 @@ async def generate_questions_from_upload(
         description="Question difficulty level"
     ),
     num_questions: int = Form(10, ge=1, le=50, description="Number of questions"),
-    focus_areas: Optional[str] = Form(None, description="Comma-separated focus areas")
+    focus_areas: Optional[str] = Form(None, description="Comma-separated focus areas"),
+    api_key: str = Form(..., description="Gemini API key")
 ):
     """
     Generate interview questions from uploaded resume and job description.
@@ -135,6 +135,9 @@ async def generate_questions_from_upload(
         logger.info(f"Generating {num_questions} {round_type} questions")
         
         try:
+            # Create question agent with provided API key
+            question_agent = InterviewQuestionAgent(api_key=api_key)
+            
             response = question_agent.generate_questions(
                 resume_text=resume_data.raw_text,
                 job_description=job_description,
@@ -160,7 +163,10 @@ async def generate_questions_from_upload(
 
 
 @app.post("/api/v1/generate-questions-json", response_model=QuestionGenerationResponse)
-async def generate_questions_from_json(request: QuestionGenerationRequest):
+async def generate_questions_from_json(
+    request: QuestionGenerationRequest,
+    api_key: str = Form(..., description="Gemini API key")
+):
     """
     Generate interview questions from JSON request.
     
@@ -175,6 +181,9 @@ async def generate_questions_from_json(request: QuestionGenerationRequest):
             f"Generating {request.num_questions} {request.round_type} questions "
             f"at {request.difficulty} level"
         )
+        
+        # Create question agent with provided API key
+        question_agent = InterviewQuestionAgent(api_key=api_key)
         
         response = question_agent.generate_from_request(request)
         

@@ -108,6 +108,25 @@ class InterviewAssistant {
         if (jobDescTextarea) {
             this.setupCharacterCounter(jobDescTextarea);
         }
+
+        // API Key handling
+        const apiKeyInput = document.getElementById('api_key');
+        if (apiKeyInput) {
+            // Try to load from localStorage
+            const savedApiKey = localStorage.getItem('gemini_api_key');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+            }
+
+            // Save API key when input changes
+            apiKeyInput.addEventListener('change', () => {
+                if (apiKeyInput.value) {
+                    localStorage.setItem('gemini_api_key', apiKeyInput.value);
+                } else {
+                    localStorage.removeItem('gemini_api_key');
+                }
+            });
+        }
     }
 
     validateField(field) {
@@ -130,6 +149,9 @@ class InterviewAssistant {
         } else if (field.id === 'job_description' && value.length < 50) {
             isValid = false;
             errorMessage = 'Job description should be at least 50 characters';
+        } else if (field.id === 'api_key' && value.length < 20) {
+            isValid = false;
+            errorMessage = 'Please enter a valid Gemini API key';
         }
 
         this.showFieldError(field, isValid ? '' : errorMessage);
