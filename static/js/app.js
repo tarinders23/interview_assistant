@@ -54,44 +54,52 @@ class InterviewAssistant {
     }
 
     handleFileSelection(file) {
-        const fileInput = document.getElementById('resume');
-        const uploadContent = document.getElementById('upload-content');
-        const fileSelected = document.getElementById('file-selected');
-        const fileName = document.getElementById('file-name');
+        try {
+            const fileInput = document.getElementById('resume');
+            const uploadContent = document.getElementById('upload-content');
+            const fileSelected = document.getElementById('file-selected');
+            const fileName = document.getElementById('file-name');
 
-        // Validate file type (PDF, DOCX, or TXT)
-        const validMimeTypes = [
-            'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'text/plain'
-        ];
-        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-        const validExtensions = ['.pdf', '.docx', '.txt'];
-        
-        const isValidType = validMimeTypes.includes(file.type) || validExtensions.includes(fileExtension);
-        
-        if (!isValidType) {
-            this.showToast('Please select a PDF, DOCX, or TXT file', 'error');
-            return;
+            if (!fileInput || !uploadContent || !fileSelected || !fileName) {
+                console.error('Required DOM elements not found');
+                this.showToast('UI elements not found', 'error');
+                return;
+            }
+
+            // Validate file type (PDF, DOCX, or TXT)
+            // Extract file extension and convert to lowercase
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            const validExtensions = ['.pdf', '.docx', '.txt'];
+            
+            // Check by file extension (primary method - most reliable)
+            const isValidType = validExtensions.includes(fileExtension);
+            
+            if (!isValidType) {
+                this.showToast('Please select a PDF, DOCX, or TXT file', 'error');
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                this.showToast('File size must be less than 10MB', 'error');
+                return;
+            }
+
+            // Update UI
+            uploadContent.classList.add('hidden');
+            fileSelected.classList.remove('hidden');
+            fileName.textContent = `${file.name} (${this.formatFileSize(file.size)})`;
+            
+            // Create a new file list for the input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            this.showToast('Resume uploaded successfully', 'success');
+        } catch (error) {
+            console.error('Error in handleFileSelection:', error);
+            this.showToast('Error selecting file: ' + error.message, 'error');
         }
-
-        // Validate file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            this.showToast('File size must be less than 10MB', 'error');
-            return;
-        }
-
-        // Update UI
-        uploadContent.classList.add('hidden');
-        fileSelected.classList.remove('hidden');
-        fileName.textContent = `${file.name} (${this.formatFileSize(file.size)})`;
-        
-        // Create a new file list for the input
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-        fileInput.files = dataTransfer.files;
-
-        this.showToast('Resume uploaded successfully', 'success');
     }
 
     formatFileSize(bytes) {
@@ -140,28 +148,37 @@ class InterviewAssistant {
     }
 
     validateField(field) {
-        const value = field.value.trim();
         let isValid = true;
         let errorMessage = '';
 
-        if (field.hasAttribute('required') && !value) {
-            isValid = false;
-            errorMessage = 'This field is required';
-        } else if (field.type === 'number') {
-            const num = parseInt(value);
-            const min = parseInt(field.getAttribute('min'));
-            const max = parseInt(field.getAttribute('max'));
-            
-            if (num < min || num > max) {
+        // Special handling for file inputs
+        if (field.type === 'file') {
+            if (field.hasAttribute('required') && field.files.length === 0) {
                 isValid = false;
-                errorMessage = `Value must be between ${min} and ${max}`;
+                errorMessage = 'Please select a file';
             }
-        } else if (field.id === 'job_description' && value.length < 50) {
-            isValid = false;
-            errorMessage = 'Job description should be at least 50 characters';
-        } else if (field.id === 'api_key' && value.length < 20) {
-            isValid = false;
-            errorMessage = 'Please enter a valid Gemini API key';
+        } else {
+            const value = field.value.trim();
+
+            if (field.hasAttribute('required') && !value) {
+                isValid = false;
+                errorMessage = 'This field is required';
+            } else if (field.type === 'number') {
+                const num = parseInt(value);
+                const min = parseInt(field.getAttribute('min'));
+                const max = parseInt(field.getAttribute('max'));
+                
+                if (num < min || num > max) {
+                    isValid = false;
+                    errorMessage = `Value must be between ${min} and ${max}`;
+                }
+            } else if (field.id === 'job_description' && value.length < 50) {
+                isValid = false;
+                errorMessage = 'Job description should be at least 50 characters';
+            } else if (field.id === 'api_key' && value.length < 20) {
+                isValid = false;
+                errorMessage = 'Please enter a valid Gemini API key';
+            }
         }
 
         this.showFieldError(field, isValid ? '' : errorMessage);
