@@ -363,6 +363,107 @@ class ResumeParser:
         
         return list(set(found_skills))  # Remove duplicates
 
+    def extract_text_from_pdf(self, pdf_bytes: bytes) -> str:
+        """
+        Extract plain text from a PDF file (for JD or other documents).
+        
+        Args:
+            pdf_bytes: PDF file content as bytes
+            
+        Returns:
+            Extracted text as string
+            
+        Raises:
+            Exception: If PDF parsing fails
+        """
+        try:
+            import io
+            pdf_file = io.BytesIO(pdf_bytes)
+            
+            with pdfplumber.open(pdf_file) as pdf:
+                raw_text = ""
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        raw_text += page_text + "\n"
+            
+            if not raw_text.strip():
+                raise ValueError("No text could be extracted from the PDF")
+            
+            logger.info("Successfully extracted text from PDF")
+            return raw_text.strip()
+                
+        except Exception as e:
+            logger.error(f"Error extracting text from PDF: {str(e)}")
+            raise Exception(f"Failed to extract text from PDF: {str(e)}")
+
+    def extract_text_from_docx(self, docx_bytes: bytes) -> str:
+        """
+        Extract plain text from a DOCX file (for JD or other documents).
+        
+        Args:
+            docx_bytes: DOCX file content as bytes
+            
+        Returns:
+            Extracted text as string
+            
+        Raises:
+            Exception: If DOCX parsing fails
+        """
+        try:
+            import io
+            docx_file = io.BytesIO(docx_bytes)
+            
+            doc = Document(docx_file)
+            
+            raw_text = ""
+            # Extract text from all paragraphs
+            for paragraph in doc.paragraphs:
+                if paragraph.text.strip():
+                    raw_text += paragraph.text + "\n"
+            
+            # Also extract text from tables if any
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        if cell.text.strip():
+                            raw_text += cell.text + "\n"
+            
+            if not raw_text.strip():
+                raise ValueError("No text could be extracted from the DOCX file")
+            
+            logger.info("Successfully extracted text from DOCX")
+            return raw_text.strip()
+                
+        except Exception as e:
+            logger.error(f"Error extracting text from DOCX: {str(e)}")
+            raise Exception(f"Failed to extract text from DOCX: {str(e)}")
+
+    def extract_text_from_file(self, file_bytes: bytes, file_name: str) -> str:
+        """
+        Extract text from a document file, automatically detecting the format.
+        Supports PDF and DOCX formats.
+        
+        Args:
+            file_bytes: File content as bytes
+            file_name: File name with extension (used to determine format)
+            
+        Returns:
+            Extracted text as string
+            
+        Raises:
+            ValueError: If file format is not supported
+            Exception: If extraction fails
+        """
+        file_lower = file_name.lower()
+        
+        if file_lower.endswith('.pdf'):
+            return self.extract_text_from_pdf(file_bytes)
+        elif file_lower.endswith('.docx'):
+            return self.extract_text_from_docx(file_bytes)
+        else:
+            raise ValueError(f"Unsupported file format: {file_name}. Supported formats: PDF, DOCX")
+
 
 class ResumeParserError(Exception):
     """Custom exception for resume parsing errors."""

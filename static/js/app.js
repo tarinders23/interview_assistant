@@ -7,6 +7,7 @@ class InterviewAssistant {
 
     init() {
         this.setupFileUpload();
+        this.setupJobDescriptionUpload();
         this.setupFormValidation();
         this.setupQuestionGeneration();
         this.setupExportFunctionality();
@@ -110,6 +111,133 @@ class InterviewAssistant {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
+    setupJobDescriptionUpload() {
+        // Setup tab switching
+        const textTab = document.getElementById('jd-text-tab');
+        const fileTab = document.getElementById('jd-file-tab');
+        const textContent = document.getElementById('jd-text-content');
+        const fileContent = document.getElementById('jd-file-content');
+
+        if (!textTab || !fileTab || !textContent || !fileContent) return;
+
+        textTab.addEventListener('click', (e) => {
+            e.preventDefault();
+            textTab.classList.add('border-b-2', 'border-primary-600', 'text-primary-600');
+            textTab.classList.remove('border-transparent', 'text-gray-600');
+            fileTab.classList.remove('border-b-2', 'border-primary-600', 'text-primary-600');
+            fileTab.classList.add('border-transparent', 'text-gray-600');
+            textContent.classList.remove('hidden');
+            fileContent.classList.add('hidden');
+            document.getElementById('job_description_file').value = ''; // Clear file
+        });
+
+        fileTab.addEventListener('click', (e) => {
+            e.preventDefault();
+            fileTab.classList.add('border-b-2', 'border-primary-600', 'text-primary-600');
+            fileTab.classList.remove('border-transparent', 'text-gray-600');
+            textTab.classList.remove('border-b-2', 'border-primary-600', 'text-primary-600');
+            textTab.classList.add('border-transparent', 'text-gray-600');
+            fileContent.classList.remove('hidden');
+            textContent.classList.add('hidden');
+            document.getElementById('job_description').value = ''; // Clear text
+        });
+
+        // Setup file upload for JD
+        const jdFileInput = document.getElementById('job_description_file');
+        const jdUploadArea = document.querySelector('.jd-file-upload-area');
+
+        if (!jdFileInput || !jdUploadArea) return;
+
+        // Drag and drop
+        jdUploadArea.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            jdUploadArea.classList.add('drag-over');
+        });
+
+        jdUploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            if (!jdUploadArea.contains(e.relatedTarget)) {
+                jdUploadArea.classList.remove('drag-over');
+            }
+        });
+
+        jdUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        jdUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            jdUploadArea.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                this.handleJDFileSelection(files[0]);
+            }
+        });
+
+        jdFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                this.handleJDFileSelection(e.target.files[0]);
+            }
+        });
+
+        // Click to upload
+        jdUploadArea.addEventListener('click', () => jdFileInput.click());
+
+        // Change file button
+        const changeJDFileBtn = document.getElementById('jd-change-file');
+        if (changeJDFileBtn) {
+            changeJDFileBtn.addEventListener('click', () => jdFileInput.click());
+        }
+    }
+
+    handleJDFileSelection(file) {
+        try {
+            const jdFileInput = document.getElementById('job_description_file');
+            const uploadContent = document.getElementById('jd-upload-content');
+            const fileSelected = document.getElementById('jd-file-selected');
+            const fileName = document.getElementById('jd-file-name');
+
+            if (!jdFileInput || !uploadContent || !fileSelected || !fileName) {
+                console.error('Required DOM elements not found for JD upload');
+                this.showToast('UI elements not found', 'error');
+                return;
+            }
+
+            // Validate file type (PDF or DOCX only - not TXT)
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            const validExtensions = ['.pdf', '.docx'];
+
+            const isValidType = validExtensions.includes(fileExtension);
+
+            if (!isValidType) {
+                this.showToast('Please select a PDF or DOCX file', 'error');
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                this.showToast('File size must be less than 10MB', 'error');
+                return;
+            }
+
+            // Update UI
+            uploadContent.classList.add('hidden');
+            fileSelected.classList.remove('hidden');
+            fileName.textContent = `${file.name} (${this.formatFileSize(file.size)})`;
+
+            // Create a new file list for the input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            jdFileInput.files = dataTransfer.files;
+
+            this.showToast('Job description file uploaded successfully', 'success');
+        } catch (error) {
+            console.error('Error in handleJDFileSelection:', error);
+            this.showToast('Error selecting file: ' + error.message, 'error');
+        }
+    }
+
     setupFormValidation() {
         const form = document.getElementById('questionForm');
         if (!form) return;
@@ -172,9 +300,13 @@ class InterviewAssistant {
                     isValid = false;
                     errorMessage = `Value must be between ${min} and ${max}`;
                 }
-            } else if (field.id === 'job_description' && value.length < 50) {
-                isValid = false;
-                errorMessage = 'Job description should be at least 50 characters';
+            } else if (field.id === 'job_description') {
+                // Check if either text or file is provided
+                const jdFile = document.getElementById('job_description_file');
+                if (value.length < 50 && (!jdFile || jdFile.files.length === 0)) {
+                    isValid = false;
+                    errorMessage = 'Provide either job description text (50+ characters) or upload a file';
+                }
             } else if (field.id === 'api_key' && value.length < 20) {
                 isValid = false;
                 errorMessage = 'Please enter a valid Gemini API key';

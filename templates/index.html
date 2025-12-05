@@ -109,20 +109,60 @@
 
             <!-- Job Description -->
             <div class="space-y-4">
-                <label for="job_description" class="block text-lg font-semibold text-gray-900">
+                <label class="block text-lg font-semibold text-gray-900">
                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
                     </svg>
                     Job Description
                 </label>
-                <textarea
-                    id="job_description"
-                    name="job_description"
-                    required
-                    rows="6"
-                    data-auto-resize
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
-                    placeholder="Paste the complete job description here. Include requirements, responsibilities, and any specific skills needed..."></textarea>
+
+                <!-- Tabs for text input vs file upload -->
+                <div class="flex gap-2 border-b border-gray-300 mb-4">
+                    <button type="button" id="jd-text-tab" class="px-4 py-2 border-b-2 border-primary-600 text-primary-600 font-semibold transition-colors" data-tab="text">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Paste Text
+                    </button>
+                    <button type="button" id="jd-file-tab" class="px-4 py-2 border-b-2 border-transparent text-gray-600 hover:text-gray-900 font-semibold transition-colors" data-tab="file">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Upload File
+                    </button>
+                </div>
+
+                <!-- Text Input Tab -->
+                <div id="jd-text-content" class="space-y-4">
+                    <textarea
+                        id="job_description"
+                        name="job_description"
+                        rows="6"
+                        data-auto-resize
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                        placeholder="Paste the complete job description here. Include requirements, responsibilities, and any specific skills needed..."></textarea>
+                </div>
+
+                <!-- File Upload Tab -->
+                <div id="jd-file-content" class="hidden space-y-4">
+                    <div class="jd-file-upload-area border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-400 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <input type="file" id="job_description_file" name="job_description_file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden">
+                        <div id="jd-upload-content">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-gray-600 font-medium">Click to upload or drag and drop</p>
+                            <p class="text-gray-400 text-sm mt-2">PDF or DOCX files (max 10MB)</p>
+                        </div>
+                        <div id="jd-file-selected" class="hidden">
+                            <svg class="w-12 h-12 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-green-600 font-medium" id="jd-file-name"></p>
+                            <button type="button" id="jd-change-file" class="text-primary-600 text-sm mt-2 hover:underline">Change file</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Interview Options -->

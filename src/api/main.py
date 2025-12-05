@@ -85,7 +85,8 @@ async def health_check():
 @app.post("/api/v1/generate-questions", response_model=QuestionGenerationResponse)
 async def generate_questions_from_upload(
     resume: UploadFile = File(..., description="Resume file (PDF, DOCX, or TXT)"),
-    job_description: str = Form(..., description="Job description text"),
+    job_description: Optional[str] = Form(None, description="Job description text"),
+    job_description_file: Optional[UploadFile] = File(None, description="Job description file (PDF or DOCX)"),
     round_type: RoundType = Form(..., description="Interview round type"),
     difficulty: DifficultyLevel = Form(
         DifficultyLevel.INTERMEDIATE,
@@ -100,7 +101,8 @@ async def generate_questions_from_upload(
     
     Args:
         resume: Resume file (PDF, DOCX, or TXT)
-        job_description: Text description of the job
+        job_description: Text description of the job (optional if job_description_file provided)
+        job_description_file: Job description file (PDF or DOCX - optional if job_description provided)
         round_type: Type of interview (technical, behavioral, etc.)
         difficulty: Difficulty level of questions
         num_questions: How many questions to generate
@@ -110,7 +112,14 @@ async def generate_questions_from_upload(
         QuestionGenerationResponse with generated questions
     """
     try:
-        # Validate file type
+        # Validate that at least one job description source is provided
+        if not job_description and not job_description_file:
+            raise HTTPException(
+                status_code=400,
+                detail="Either job_description text or job_description_file must be provided"
+            )
+        
+        # Validate resume file type
         supported_formats = ['.pdf', '.docx', '.txt']
         file_lower = resume.filename.lower()
         if not any(file_lower.endswith(fmt) for fmt in supported_formats):
@@ -127,6 +136,30 @@ async def generate_questions_from_upload(
             resume_data = resume_parser.parse_resume_bytes(resume_bytes, resume.filename)
         except ResumeParserError as e:
             raise HTTPException(status_code=400, detail=f"Resume parsing error: {str(e)}")
+        
+        # Process job description - either from text or file
+        if job_description_file and job_description_file.filename:
+            logger.info(f"Processing job description file: {job_description_file.filename}")
+            
+            # Validate JD file type - only PDF and DOCX allowed
+            jd_file_lower = job_description_file.filename.lower()
+            if not (jd_file_lower.endswith('.pdf') or jd_file_lower.endswith('.docx')):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Only PDF and DOCX files are supported for job description"
+                )
+            
+            jd_bytes = await job_description_file.read()
+            
+            try:
+                job_description = resume_parser.extract_text_from_file(jd_bytes, job_description_file.filename)
+                logger.info(f"Successfully extracted job description from file ({len(job_description)} characters)")
+            except Exception as e:
+                logger.error(f"Error extracting job description: {str(e)}")
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Failed to extract text from job description file: {str(e)}"
+                )
         
         # Parse focus areas if provided
         focus_list = None
