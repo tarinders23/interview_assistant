@@ -205,3 +205,98 @@ The foundation is solid for future enhancements:
 **The Interview Assistant now has a world-class web interface that rivals commercial applications. Users can generate AI-powered interview questions through an intuitive, beautiful, and fully-functional web application.** 🎉
 
 *Built with FastAPI, Jinja2, Tailwind CSS, and powered by Google Gemini AI*
+
+---
+
+## 🆕 Multi-Format Resume Upload Support (ADDED)
+
+### New Feature
+Added support for uploading resumes in **three formats** instead of just PDF:
+- ✅ **PDF** (.pdf) - Original support maintained
+- ✅ **Word Documents** (.docx) - NEW
+- ✅ **Plain Text** (.txt) - NEW
+
+### Implementation Details
+
+#### Backend Changes
+1. **Dependencies** (`requirements.txt`)
+   - Added `python-docx>=1.0.0` for DOCX parsing
+
+2. **Resume Parser** (`src/parsers/resume_parser.py`)
+   - Added `parse_docx()` - Parse DOCX files from file path
+   - Added `parse_docx_bytes()` - Parse DOCX from bytes
+   - Added `parse_txt()` - Parse TXT files from file path
+   - Added `parse_txt_bytes()` - Parse TXT from bytes
+   - Added `parse_resume_bytes()` - Universal parser with auto-detection
+   - All methods extract: raw text, name, email, and skills
+   - DOCX parser also handles table content
+
+3. **API Updates** (`src/api/main.py`)
+   - Updated `POST /api/v1/generate-questions` endpoint
+   - Updated `POST /api/v1/parse-resume` endpoint
+   - Both now accept `.pdf`, `.docx`, `.txt` files
+   - Enhanced file validation and error messages
+
+#### Frontend Changes
+1. **HTML UI** (`templates/index.html`)
+   - Updated file input to accept `.pdf,.docx,.txt`
+   - Changed label: "Upload Resume (PDF, DOCX, or TXT)"
+   - Updated helper text: "PDF, DOCX, or TXT files"
+   - Enhanced drag-and-drop for multiple MIME types
+
+2. **JavaScript** (`static/js/app.js`)
+   - Updated `handleFileSelection()` method
+   - Added DOCX MIME type support
+   - Added file extension fallback checking
+   - Updated validation error messages
+
+### Supported MIME Types
+| Format | Extension | MIME Type |
+|--------|-----------|-----------|
+| PDF | `.pdf` | `application/pdf` |
+| Word | `.docx` | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` |
+| Text | `.txt` | `text/plain` |
+
+### Backward Compatibility
+✅ **Fully backward compatible**
+- All existing PDF functionality unchanged
+- No breaking API changes
+- Same response format for all file types
+- Existing integrations continue to work
+
+### Usage Examples
+
+#### Web Interface
+Users can now drag-and-drop or click to upload:
+- resume.pdf
+- resume.docx
+- resume.txt
+
+#### REST API - DOCX Upload
+```bash
+curl -X POST "http://localhost:8000/api/v1/generate-questions" \
+  -F "resume=@resume.docx" \
+  -F "job_description=Senior Python Developer" \
+  -F "round_type=technical" \
+  -F "difficulty=intermediate" \
+  -F "num_questions=10" \
+  -F "api_key=YOUR_API_KEY"
+```
+
+#### REST API - TXT Upload
+```bash
+curl -X POST "http://localhost:8000/api/v1/generate-questions" \
+  -F "resume=@resume.txt" \
+  -F "job_description=Senior Python Developer" \
+  -F "round_type=technical" \
+  -F "difficulty=intermediate" \
+  -F "num_questions=10" \
+  -F "api_key=YOUR_API_KEY"
+```
+
+### Files Modified for Multi-Format Support
+1. ✅ `requirements.txt` - Added python-docx
+2. ✅ `src/parsers/resume_parser.py` - Added 5 new parsing methods
+3. ✅ `src/api/main.py` - Updated file validation (2 endpoints)
+4. ✅ `templates/index.html` - Updated UI and file input
+5. ✅ `static/js/app.js` - Enhanced file type validation

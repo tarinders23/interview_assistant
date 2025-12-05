@@ -84,7 +84,7 @@ async def health_check():
 
 @app.post("/api/v1/generate-questions", response_model=QuestionGenerationResponse)
 async def generate_questions_from_upload(
-    resume: UploadFile = File(..., description="PDF resume file"),
+    resume: UploadFile = File(..., description="Resume file (PDF, DOCX, or TXT)"),
     job_description: str = Form(..., description="Job description text"),
     round_type: RoundType = Form(..., description="Interview round type"),
     difficulty: DifficultyLevel = Form(
@@ -99,7 +99,7 @@ async def generate_questions_from_upload(
     Generate interview questions from uploaded resume and job description.
     
     Args:
-        resume: PDF file of candidate's resume
+        resume: Resume file (PDF, DOCX, or TXT)
         job_description: Text description of the job
         round_type: Type of interview (technical, behavioral, etc.)
         difficulty: Difficulty level of questions
@@ -111,10 +111,12 @@ async def generate_questions_from_upload(
     """
     try:
         # Validate file type
-        if not resume.filename.lower().endswith('.pdf'):
+        supported_formats = ['.pdf', '.docx', '.txt']
+        file_lower = resume.filename.lower()
+        if not any(file_lower.endswith(fmt) for fmt in supported_formats):
             raise HTTPException(
                 status_code=400,
-                detail="Only PDF files are supported for resumes"
+                detail="Only PDF, DOCX, and TXT files are supported for resumes"
             )
         
         # Read and parse resume
@@ -122,7 +124,7 @@ async def generate_questions_from_upload(
         resume_bytes = await resume.read()
         
         try:
-            resume_data = resume_parser.parse_pdf_bytes(resume_bytes)
+            resume_data = resume_parser.parse_resume_bytes(resume_bytes, resume.filename)
         except ResumeParserError as e:
             raise HTTPException(status_code=400, detail=f"Resume parsing error: {str(e)}")
         
@@ -203,25 +205,27 @@ async def generate_questions_from_json(
 @app.post("/api/v1/parse-resume")
 async def parse_resume_endpoint(resume: UploadFile = File(...)):
     """
-    Parse a resume PDF and return extracted information.
+    Parse a resume and return extracted information.
     
     Args:
-        resume: PDF file of candidate's resume
+        resume: Resume file (PDF, DOCX, or TXT)
         
     Returns:
         Parsed resume data
     """
     try:
-        if not resume.filename.lower().endswith('.pdf'):
+        supported_formats = ['.pdf', '.docx', '.txt']
+        file_lower = resume.filename.lower()
+        if not any(file_lower.endswith(fmt) for fmt in supported_formats):
             raise HTTPException(
                 status_code=400,
-                detail="Only PDF files are supported"
+                detail="Only PDF, DOCX, and TXT files are supported"
             )
         
         logger.info(f"Parsing resume: {resume.filename}")
         resume_bytes = await resume.read()
         
-        resume_data = resume_parser.parse_pdf_bytes(resume_bytes)
+        resume_data = resume_parser.parse_resume_bytes(resume_bytes, resume.filename)
         
         return {
             "name": resume_data.name,

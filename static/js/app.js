@@ -59,9 +59,19 @@ class InterviewAssistant {
         const fileSelected = document.getElementById('file-selected');
         const fileName = document.getElementById('file-name');
 
-        // Validate file type
-        if (file.type !== 'application/pdf') {
-            this.showToast('Please select a PDF file', 'error');
+        // Validate file type (PDF, DOCX, or TXT)
+        const validMimeTypes = [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
+        ];
+        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+        const validExtensions = ['.pdf', '.docx', '.txt'];
+        
+        const isValidType = validMimeTypes.includes(file.type) || validExtensions.includes(fileExtension);
+        
+        if (!isValidType) {
+            this.showToast('Please select a PDF, DOCX, or TXT file', 'error');
             return;
         }
 

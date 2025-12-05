@@ -86,16 +86,16 @@
                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
-                    Upload Resume (PDF)
+                    Upload Resume (PDF, DOCX, or TXT)
                 </label>
                 <div class="file-upload-area border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-400 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100">
-                    <input type="file" id="resume" name="resume" accept=".pdf" required class="hidden">
+                    <input type="file" id="resume" name="resume" accept=".pdf,.docx,.txt" required class="hidden">
                     <div id="upload-content">
                         <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         <p class="text-gray-600 font-medium">Click to upload or drag and drop</p>
-                        <p class="text-gray-400 text-sm mt-2">PDF files only</p>
+                        <p class="text-gray-400 text-sm mt-2">PDF, DOCX, or TXT files</p>
                     </div>
                     <div id="file-selected" class="hidden">
                         <svg class="w-12 h-12 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,20 +293,27 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadArea.classList.remove('border-primary-400', 'bg-primary-50');
     });
     
-    uploadArea.addEventListener('drop', (e) => {
+        uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadArea.classList.remove('border-primary-400', 'bg-primary-50');
         
         const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type === 'application/pdf') {
-            fileInput.files = files;
-            handleFileSelect();
+        if (files.length > 0) {
+            const file = files[0];
+            const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+            const validExtensions = ['.pdf', '.docx', '.txt'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (validTypes.includes(file.type) || validExtensions.includes(fileExtension)) {
+                fileInput.files = files;
+                handleFileSelect();
+            } else {
+                showToast('Please select a PDF, DOCX, or TXT file', 'error');
+            }
         } else {
-            showToast('Please select a PDF file', 'error');
+            showToast('Please select a file', 'error');
         }
-    });
-
-    fileInput.addEventListener('change', handleFileSelect);
+    });    fileInput.addEventListener('change', handleFileSelect);
     changeFileBtn.addEventListener('click', () => {
         fileInput.click();
     });
